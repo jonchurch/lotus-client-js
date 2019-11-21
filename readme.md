@@ -24,6 +24,10 @@ Lotus uses `.lotus` to store API information, as well as the blocks that it atte
 
 You can enter the container with docker exec and run the client code to test the API. I did it like this because I had trouble exposing lotus ports to the host machine `¯\_(ツ)\_/¯`
 
+```shell
+docker exec -it lotus-client-dev /bin/bash
+```
+
 ## API Client
 
 The lotus API exposes a JSON-RPC interface which you can make calls against.
