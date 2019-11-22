@@ -10,6 +10,8 @@
   "author": "Jon Church",
   "license": "MIT",
   "dependencies": {
-    "node-fetch": "^2.6.0"
-  }
+    "node-fetch": "^2.6.0",
+    "uuid": "^3.3.3"
+  },
+  "devDependencies": {}
 }

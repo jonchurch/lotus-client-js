@@ -1,47 +1,38 @@
 const fetch = require('node-fetch');
+const uuidv4 = require('uuid/v4');
 
-const API_BASE = 'http://127.0.0.1:1234/rpc/v0';
+const common = require('./common');
+const full = require('./full');
 
-async function makeRequest(payload) {
-  try {
-    const res = await fetch(`${API_BASE}`, {
-      method: 'post',
-      body: JSON.stringify({ id: 0, ...payload }),
-    });
-    const { result } = await res.json();
-    return result;
-  } catch (err) {
-    throw err;
+function createClient({ url }) {
+  const API_BASE = url;
+  // let _fetch = fetch;
+  // if (global.window && window.fetch) {
+  //   _fetch = window.fetch;
+  // }
+  if (!url) {
+    // API_BASE = '127.0.0.0.1:1234/rpc/v0';
+    throw new Error('Url is required by lotus client');
   }
+  async function makeRequest(payload) {
+    try {
+      const res = await fetch(`${API_BASE}`, {
+        method: 'post',
+        body: JSON.stringify({ id: uuidv4(), ...payload }),
+      });
+      const { result, error } = await res.json();
+      if (error) {
+        throw new Error(error.message);
+      }
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  }
+  return {
+    common: common(makeRequest),
+    full: full(makeRequest),
+  };
 }
 
-async function version() {
-  const res = await makeRequest({
-    method: 'Filecoin.Version',
-    params: [],
-    id: 0,
-  });
-  return res.json();
-}
-
-async function netPeers() {
-  return makeRequest({ method: 'Filecoin.NetPeers' });
-}
-
-async function id() {
-  return makeRequest({ method: 'Filecoin.ID' });
-}
-async function syncState() {
-  return makeRequest({ method: 'Filecoin.SyncState' });
-}
-async function chainHead() {
-  return makeRequest({ method: 'Filecoin.ChainHead' });
-}
-
-// version()
-// netPeers()
-// id()
-// syncState()
-chainHead()
-  .then(console.log)
-  .catch(console.log);
+module.exports = createClient;
